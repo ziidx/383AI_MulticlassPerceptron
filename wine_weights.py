@@ -41,22 +41,16 @@ def standardize(examples):
     See: https://en.wikipedia.org/wiki/Standard_score for more detail on z-scores.  N.B.: the last
         field each row is assumed to contain the class label and is not transformed!    
     """
-
-    # 
-    # Fill this in!
-    #
     meanArr = []
     stdevArr = []
     exArr = np.array(examples).transpose()
     for row in exArr[:-1]:
         row = [float(x) for x in row.tolist()]
         stdevArr.append(statistics.stdev(row))
-        meanArr.append(sum(row)/len(examples))
-
+        meanArr.append(sum(row) / len(examples))
     for i in range(len(examples)):
         for j in range(13):
             examples[i][j] = (examples[i][j] - meanArr[j]) / stdevArr[j]  # Fscore calculation
-
     return examples  # Fix this line!
 
 def learn_weights(examples):
@@ -93,7 +87,9 @@ def learn_weights(examples):
         successCount = 0
         errorCount = 0
         for row in examples:
-            npRow = np.array(row[0:13], dtype=float)
+            npRow = np.array(row[0:13])
+            # print(npRow)
+            # break
             maxDP = np.dot(one, npRow)  # Set to first dot product
             maxClass = 1
             wineClass = 1
@@ -137,11 +133,11 @@ def learn_weights(examples):
             minErrors = errorCount
             minErrorIt = i
 
-    print("Minimum Wines Classified Wrong:",minErrors,"(Iteration {})".format(minErrorIt))  # For questions
-    print("Final Wines Classified Wrong:",errorCount,"(Iteration {})".format(i))
-    weights['1'] = one.tolist()
-    weights['2'] = two.tolist()
-    weights['3'] = three.tolist()
+    # print("Minimum Wines Classified Wrong:",minErrors,"(Iteration {})".format(minErrorIt))  # For questions
+    # print("Final Wines Classified Wrong:",errorCount,"(Iteration {})".format(i))
+    weights['1'] = one[0]
+    weights['2'] = two[0]
+    weights['3'] = three[0]
 
     return weights
 
@@ -160,8 +156,8 @@ if __name__ == '__main__':
     path_to_csv = "wine.csv"
     training_data = read_data(path_to_csv)
 
-    # class__weights = learn_weights(training_data)
-    # print_weights(class__weights)
+    class__weights = learn_weights(training_data)
+    print_weights(class__weights)
 
     training_data = standardize(training_data)
     class__weights = learn_weights(training_data)
